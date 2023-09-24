@@ -11,6 +11,15 @@ class Road{
         const infinity = 100000000;
         this.top = -infinity;
         this.bottom = +infinity;
+        // This array will hold segments made of 2 points each
+        const topLeft = { x:this.left, y:this.top };
+        const topRight = { x:this.right, y:this.top };
+        const bottomLeft = { x:this.left, y:this.bottom };
+        const bottomRight = { x:this.left, y:this.bottom };
+        this.borders = [
+            [topLeft, bottomLeft],
+            [topRight, bottomRight]
+        ];
     }
 
     getLaneCenter(laneIndex){
@@ -24,7 +33,7 @@ class Road{
         ctx.strokeStyle = "white";
 
         // let i;
-        for(let i=0;i<=this.laneCount;i++){
+        for(let i=1;i<=this.laneCount-1;i++){
             /* To draw multiple lanes, the x-coordinate of the lane(where it starts) is required, depending upon the laneCount, there will be more lanes, with different x-coordinates, which are calculated using linear interpolation */
             const x = lerp(
                 this.right,
@@ -32,17 +41,22 @@ class Road{
                 // These left and right values are calculated as per a % | when i>1, % values will be calculated 
                 i/this.laneCount
             );
-            if(i>0 && i<this.laneCount){
-                // Adding dashed lines for splitting the lanes | [20,20] - 20 px long, 20px space
-                ctx.setLineDash([20,20]);
-            }else{
-                ctx.setLineDash([]);
-            }
+            
+            ctx.setLineDash([20,20]);
             // Drawing vertical lines on left and right of the screens
             ctx.beginPath();
             ctx.moveTo(x, this.top);
             ctx.lineTo(x, this.bottom);
             ctx.stroke();
         }
-    }
+
+        // The lines can be drwan separately as the borders are defined(ln:19), and also for any changes like curved roads to reflect on the UI
+        ctx.setLineDash([]);
+        this.borders.forEach(border => {
+            ctx.beginPath();
+            ctx.moveTo(border[0].x, border[0].y);
+            ctx.lineTo(border[1].x, border[1].y);
+            ctx.stroke();
+        });
+    } 
 }

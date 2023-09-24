@@ -17,10 +17,16 @@ function animate(){
     car.update();
     // Resizing the canvas after the car's position is updated, clears the previous position data and leaves no trail
     canvas.height = window.innerHeight;
+    // Before drawing the Road: save the context
+    ctx.save();
+    // Before drawing the Road: Translate nothing on x, bu t
+    ctx.translate(0, -car.y+canvas.height*0.8);
     // Draw the road first, so the car can be placed on top of it
     road.draw(ctx);
     // Draw the car with updated position
     car.draw(ctx);
+
+    ctx.restore();
     // requestAnimationFrame calls animate() againa nd again, many times per second, giving the illusion of movement
     requestAnimationFrame(animate);
 }
