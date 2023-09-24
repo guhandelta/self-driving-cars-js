@@ -27,7 +27,6 @@ class Controls{
                     this.right = true;
                     break;
             }
-            console.table(this);
         }
 
         document.onkeyup = (e) =>{
@@ -45,7 +44,6 @@ class Controls{
                     this.right = false;
                     break;
             }
-            console.table(this);
         }
     };
 }
