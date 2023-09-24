@@ -5,6 +5,8 @@ class Car{
         this.y=y;
         this.width=width;
         this.height=height;
+
+        this.controls = new Controls();
     }
 
     draw(ctx){
@@ -20,5 +22,20 @@ class Car{
         );
         // fill() from Canvas 2D API fills the current or given path with the current fillStyle. 
         ctx.fill();
+    }
+
+    update(){
+        if(this.controls.forward){
+            this.y-=2
+        }
+        if(this.controls.backward){
+            this.y+=2
+        }
+        if(this.controls.left){
+            this.x-=2
+        }
+        if(this.controls.right){
+            this.x+=2
+        }
     }
 }
