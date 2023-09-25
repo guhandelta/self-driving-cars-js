@@ -12,11 +12,13 @@ class Car{
         this.friction=0.05;
         this.angle=0;
 
+        this.sensor = new Sensor(this); // this => passing tha Car to Sensor
         this.controls = new Controls();
     }
 
     update(){
         this.#motion();
+        this.sensor.update();
     }
 
     #motion(){
@@ -87,6 +89,8 @@ class Car{
         ctx.fill();
         // Restoring the canvas, to prevent translating and rotating for every single frame
         ctx.restore();
+        // Making the sensor draw itself => The car has it's own responsibility to draw teh sensor    
+        this.sensor.draw(ctx);
     }
 
 }
