@@ -18,6 +18,8 @@ class Car{
 
     update(roadBorders){
         this.#motion();
+        // Updates the points after the  car moves
+        this.polygon = this.#createPolygon();
         this.sensor.update(roadBorders);
     }
 
@@ -69,8 +71,46 @@ class Car{
         this.y -= Math.cos(this.angle)*this.speed;
     }
 
+    // The Corners of the, car are not known(coordinates) with the way the car is drawn and rotated
+    #createPolygon(){
+        // One point per corner of the car, and more points can be added and can have different shapes
+        const points=[];
+        // Visualize or Consider the car as an upright Rectangle : Refer car corners.png & car corners1.png for better idea
+        // Hypotenuse of the triangle (i.e.) distance from the center of the car to the corners, getting a half of that hypotenuse, gives the distance from the center of the car to a corner
+        const radius = Math.hypot(this.width, this.height)/2;
+        // The angle between the line from the center of the car and the sraight line drawn in the direction of the car is same as the angle between the height and the hypotenuse of the car, as the angles are the same no matter where a line is drawn on the hypotenuse, parallel to the height
+        const alpha = Math.atan2(this.width, this.height);
+        // Top right point
+        points.push({
+            // center x of the car -sin(this car angle - alpha angle) => Literally combining car angle and alpha angle and multiply these by the radius
+            x: this.x-Math.sin(this.angle-alpha)*radius,
+            y: this.y-Math.cos(this.angle-alpha)*radius,
+        });
+        // Top left point
+        points.push({
+            x: this.x-Math.sin(this.angle+alpha)*radius,
+            y: this.y-Math.cos(this.angle+alpha)*radius,
+        });
+        // Bottom left point
+        points.push({
+            x: this.x-Math.sin(Math.PI+this.angle-alpha)*radius,
+            y: this.y-Math.cos(Math.PI+this.angle-alpha)*radius,
+        });
+        // Bottom right point
+        points.push({
+            x: this.x-Math.sin(Math.PI+this.angle+alpha)*radius,
+            y: this.y-Math.cos(Math.PI+this.angle+alpha)*radius,
+        });
+
+        return points;
+    }
+
     draw(ctx){
-        // Rotating the unit circle
+
+
+        // *********** Since the corners of the car are not known when drawing the car in this method,........
+
+      /*  // Rotating the unit circle
         ctx.save(); //save the context
         ctx.translate(this.x, this.y); // Translate the circle to the point where the rotation to be centered at
         ctx.rotate(-this.angle)
@@ -78,18 +118,29 @@ class Car{
         ctx.beginPath();
         // rect() from Canvas 2D API adds a rectangle to the current path, which will be used to draw the car. 
         ctx.rect(
-            // center of the car 
-            // this.x & this.y are removed, as the circle is already translated to that point on ln:63
-            -this.width/2,
-            -this.height/2,
-            this.width,
-            this.height
+        // center of the car 
+        // this.x & this.y are removed, as the circle is already translated to that point on ln:63
+        -this.width/2,
+        -this.height/2,
+        this.width,
+        this.height
         );
         // fill() from Canvas 2D API fills the current or given path with the current fillStyle. 
         ctx.fill();
         // Restoring the canvas, to prevent translating and rotating for every single frame
-        ctx.restore();
-        // Making the sensor draw itself => The car has it's own responsibility to draw teh sensor    
+        ctx.restore();*/
+            
+
+        // ...... the car can now be drawn using the private function #createPolygon(), where the corners are known and updated promptly as the car moves ***********
+        ctx.beginPath();
+        // move to the first point in the polygonn
+        ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
+        // Loop through all the points within polygon[], the iteration starts from i=1 because the first point has been already visited 
+        for(let i=0;i<this.polygon.length;i++){
+            ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
+        }
+        ctx.fill();
+        // Making the sensor draw itself => The car has it's own responsibility to draw the sensor    
         this.sensor.draw(ctx);
     }
 

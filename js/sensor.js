@@ -1,5 +1,5 @@
 class Sensor{
-    constructor(car){// Sensor constructor takes in the car object so teh sensor knows where the car is
+    constructor(car){// Sensor constructor takes in the car object so the sensor knows where the car is
         this.car = car;
         this.rayCount = 5;
         this.rayLength = 150; // Range of the ray till which it can sense obstacles
