@@ -11,15 +11,21 @@ class Car{
         this.maxSpeed=3;
         this.friction=0.05;
         this.angle=0;
+        this.damaged=false;
 
         this.sensor = new Sensor(this); // this => passing tha Car to Sensor
         this.controls = new Controls();
     }
 
     update(roadBorders){
-        this.#motion();
-        // Updates the points after the  car moves
-        this.polygon = this.#createPolygon();
+        // The car should not move/not allowed to move when damaged, 
+        if(!this.damaged){    
+            this.#motion();
+            // Updates the points after the  car moves
+            this.polygon = this.#createPolygon();
+            this.damaged = this.#assessDamage(roadBorders);
+        }
+        // While the sensor will still work even when the car is damaged
         this.sensor.update(roadBorders);
     }
 
@@ -69,6 +75,25 @@ class Car{
         // The unit circle has a radius of 1 and hte sine is between 1 & -1, which is scaled as per the vaue of y
         this.x -= Math.sin(this.angle)*this.speed;
         this.y -= Math.cos(this.angle)*this.speed;
+    }
+
+    /* The color of the car changes even with this complicated design as each of the segment that is forming this polygon(car) is compared with the borders of the
+     road. This method is quite general and works with complicated polygons as well, but it can become slow if there are many points, where some optimizations like
+     looking at the bounding boxes, or something like that, would be requried. This is reliable when the object doesn't move faster, like if the cars moves very fast,
+     it can jump over a border, or even another car in traffic, and that would require a different collision detection strategy for that. 
+     
+    When zoomed in, it would be visible that the car's color would not change, when it scrapes over the road border, as the color of the car should change when it
+    touches the road borders, teh fact here is that the lines have no thickness, and that is why it may look like the car and road border are intersecting, but they 
+    really aren't. This can be fixed by replacing the road with inifinitel long tiny rectangles.
+    */
+    #assessDamage(roadBorders){
+        for(let i=0;i<roadBorders.length;i++){
+            // polysIntersect will take in 2 polygons | roadBorders[i] is not a polygon, but a segment, but it will be general enough for it to work
+            if(polysIntersect(this.polygon, roadBorders[i])){
+                return true;
+            }
+        }
+        return false;
     }
 
     // The Corners of the, car are not known(coordinates) with the way the car is drawn and rotated
@@ -132,6 +157,13 @@ class Car{
             
 
         // ...... the car can now be drawn using the private function #createPolygon(), where the corners are known and updated promptly as the car moves ***********
+        
+        if(this.damaged){
+            ctx.fillStyle="orange";
+        }else{
+            ctx.fillStyle="black";
+        }
+
         ctx.beginPath();
         // move to the first point in the polygonn
         ctx.moveTo(this.polygon[0].x, this.polygon[0].y);

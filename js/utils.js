@@ -23,3 +23,24 @@ function getIntersection(A,B,C,D){
     }
     return null;
 }
+
+// Essentially, this fn() takes all the segments that makes the 1st polygon and compares them with all the segments of the 2nd polygon
+function polysIntersect(poly1, poly2){
+    
+    for(let i=0;i<poly1.length;i++){
+        for(let j=0;j<poly2.length;j++){
+            const touch = getIntersection(
+                poly1[i], 
+                // This is to find the next point in the 1st polygon, so in a way it creates segments from one point to the next. But in the end, this may throw an error when i reaches the length of the polygon, as the point would go out of the polygon. But using the %(modulo) operator here would make that value as 0, and that is good in a way as the last point in the polygon should connect to the first point of the next polygon(which is the line segments here).
+                poly1[(i+1)%poly1.length], 
+                poly2[j], 
+                poly2[(j+1)%poly2.length], 
+            );
+            console.log(touch);
+            if(touch) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
