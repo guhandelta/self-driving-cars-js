@@ -1,5 +1,5 @@
 class Car{
-    constructor(x, y, width, height){
+    constructor(x, y, width, height, controlType, maxSpeed=3){
         // Store the args as attributes to record the dimensions and position of the car
         this.x=x;
         this.y=y;
@@ -8,32 +8,38 @@ class Car{
 
         this.speed=0;
         this.acceleration=0.2;
-        this.maxSpeed=3;
+        this.maxSpeed=maxSpeed;
         this.friction=0.05;
         this.angle=0;
         this.damaged=false;
 
-        this.sensor = new Sensor(this); // this => passing tha Car to Sensor
-        this.controls = new Controls();
+        // Draw the sensors only for the car driven by the user
+        if(controlType != "BOT"){
+            this.sensor = new Sensor(this); // this => passing tha Car to Sensor
+        }
+        this.controls = new Controls(controlType);
     }
 
-    update(roadBorders){
+    update(roadBorders, traffic){
         // The car should not move/not allowed to move when damaged, 
         if(!this.damaged){    
             this.#motion();
             // Updates the points after the  car moves
             this.polygon = this.#createPolygon();
-            this.damaged = this.#assessDamage(roadBorders);
+            // Assess damage with Border Collision and Traffic
+            this.damaged = this.#assessDamage(roadBorders, traffic);
         }
-        // While the sensor will still work even when the car is damaged
-        this.sensor.update(roadBorders);
+        if(this.sensor){
+            // While the sensor will still work even when the car is damaged
+            this.sensor.update(roadBorders, traffic);
+        }
     }
 
     #motion(){
         if(this.controls.forward){
             this.speed += this.acceleration;
         }
-        if(this.controls.reverse){
+        if(this.controls.backward){
             this.speed -= this.acceleration;
         }
 
@@ -83,13 +89,20 @@ class Car{
      it can jump over a border, or even another car in traffic, and that would require a different collision detection strategy for that. 
      
     When zoomed in, it would be visible that the car's color would not change, when it scrapes over the road border, as the color of the car should change when it
-    touches the road borders, teh fact here is that the lines have no thickness, and that is why it may look like the car and road border are intersecting, but they 
+    touches the road borders, the fact here is that the lines have no thickness, and that is why it may look like the car and road border are intersecting, but they 
     really aren't. This can be fixed by replacing the road with inifinitel long tiny rectangles.
     */
-    #assessDamage(roadBorders){
+    #assessDamage(roadBorders, traffic){
         for(let i=0;i<roadBorders.length;i++){
             // polysIntersect will take in 2 polygons | roadBorders[i] is not a polygon, but a segment, but it will be general enough for it to work
             if(polysIntersect(this.polygon, roadBorders[i])){
+                return true;
+            }
+        }
+        // The car in the traffic that is getting hit will not be damaged, as the user's car is not it it's traffic list
+        for(let i=0;i<traffic.length;i++){
+            // polysIntersect will take in 2 polygons | roadBorders[i] is not a polygon, but a segment, but it will be general enough for it to work
+            if(polysIntersect(this.polygon, traffic[i].polygon)){
                 return true;
             }
         }
@@ -130,7 +143,7 @@ class Car{
         return points;
     }
 
-    draw(ctx){
+    draw(ctx, color){
 
 
         // *********** Since the corners of the car are not known when drawing the car in this method,........
@@ -161,7 +174,7 @@ class Car{
         if(this.damaged){
             ctx.fillStyle="orange";
         }else{
-            ctx.fillStyle="black";
+            ctx.fillStyle=color;
         }
 
         ctx.beginPath();
@@ -172,8 +185,11 @@ class Car{
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
         ctx.fill();
-        // Making the sensor draw itself => The car has it's own responsibility to draw the sensor    
-        this.sensor.draw(ctx);
+        // Avoid drawing the sensors for the bot cars
+        if(this.sensor){
+            // Making the sensor draw itself => The car has it's own responsibility to draw the sensor    
+            this.sensor.draw(ctx);
+        }
     }
 
 }

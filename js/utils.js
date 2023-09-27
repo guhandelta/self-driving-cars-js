@@ -36,7 +36,6 @@ function polysIntersect(poly1, poly2){
                 poly2[j], 
                 poly2[(j+1)%poly2.length], 
             );
-            console.log(touch);
             if(touch) {
                 return true;
             }

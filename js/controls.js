@@ -1,13 +1,21 @@
 class Controls{
-    constructor(){
+    constructor(type){
         // These are initially set to false, but will change as per the keys pressed
         this.forward = false;
         this.backward = false;
         this.left = false;
         this.right = false;
+
+        switch(type){
+            case "USER":
+                // Keyboard listener to listen for keyboard events (onKeyDown & onKeyUp)
+                this.#addKeyboardListeners();
+                break;
+            case "BOT":
+                this.forward = true;
+                break;
+        }
         
-        // Keyboard listener to listen for keyboard events (onKeyDown & onKeyUp)
-        this.#addKeyboardListeners();
     }
     
     #addKeyboardListeners(){

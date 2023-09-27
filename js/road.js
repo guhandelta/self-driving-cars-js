@@ -24,8 +24,6 @@ class Road{
 
     getLaneCenter(laneIndex){
         const laneWidth = this.width/this.laneCount;
-        console.log("laneCount:\t",this.laneCount);
-        console.log("laneIndex:\t",this.laneIndex);
         // Calculate the offset of laneWidth away form the center of the 1st lane
         return this.left+laneWidth/2+Math.min(laneIndex, this.laneCount-1)*laneWidth
     }

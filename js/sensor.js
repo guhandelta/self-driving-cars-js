@@ -9,19 +9,20 @@ class Sensor{
         this.readings=[]; // Tells if there is a border and how far is it
     }
     
-    update(roadBorders){
+    update(roadBorders, traffic){
         // roadBorders can be used here to sense if the road borders are closer, with the sensors
         this.#castRays();
         this.readings=[]; 
         for(let i=0;i<this.rays.length;i++){
             this.readings.push(
-                this.#getReading(this.rays[i], roadBorders)
+                this.#getReading(this.rays[i], roadBorders, traffic)
             );
         }
     }
 
     // fn() to detect & record where rays touch any borders
-    #getReading(ray, roadBorders){
+    #getReading(ray, roadBorders, traffic){
+        // touches[] may include road borders or polygon segments from the traffic
         let touches = [];
         for(let i=0;i<roadBorders.length;i++){
             const touch = getIntersection(
@@ -37,6 +38,20 @@ class Sensor{
                 touches.push(touch);
             }
         }
+
+        for(let i=0;i<traffic.length;i++){
+            const poly= traffic[i].polygon;
+            for(let j=0;j<poly.length;j++){
+                const value = getIntersection(
+                    ray[0],
+                    ray[1],
+                    poly[j],
+                    poly[(j+1)%poly.length],
+                );
+                if(value) touches.push(value);
+            }
+        }
+
         // The car has'nt encounter anything 
         if(touches.length===0){
             return null;
