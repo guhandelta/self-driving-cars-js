@@ -3,19 +3,19 @@ class Road{
         this.x = x;
         this.width = width;
         this.laneCount = laneCount;
-        
+
         this.left = x-width/2;
         this.right = x+width/2;
 
         // Infinity from JS seems to cause to weird behaviour
-        const infinity = 100000000;
+        const infinity = 1000000;
         this.top = -infinity;
-        this.bottom = +infinity;
+        this.bottom = infinity;
         // This array will hold segments made of 2 points each
         const topLeft = { x:this.left, y:this.top };
         const topRight = { x:this.right, y:this.top };
         const bottomLeft = { x:this.left, y:this.bottom };
-        const bottomRight = { x:this.left, y:this.bottom };
+        const bottomRight = { x:this.right, y:this.bottom };
         this.borders = [
             [topLeft, bottomLeft],
             [topRight, bottomRight]
@@ -24,6 +24,8 @@ class Road{
 
     getLaneCenter(laneIndex){
         const laneWidth = this.width/this.laneCount;
+        console.log("laneCount:\t",this.laneCount);
+        console.log("laneIndex:\t",this.laneIndex);
         // Calculate the offset of laneWidth away form the center of the 1st lane
         return this.left+laneWidth/2+Math.min(laneIndex, this.laneCount-1)*laneWidth
     }
@@ -41,7 +43,7 @@ class Road{
                 // These left and right values are calculated as per a % | when i>1, % values will be calculated 
                 i/this.laneCount
             );
-            
+
             ctx.setLineDash([20,20]);
             // Drawing vertical lines on left and right of the screens
             ctx.beginPath();

@@ -6,17 +6,17 @@ canvas.width = 200; //px
 // Need to get the context to be able to draw on the canvas, 2d canvas is used here for this app
 const ctx = canvas.getContext("2d");
 
-const road = new Road(canvas.width/2, canvas.width*0.9); // *0.9 to add some margin
-const car = new Car(road.getLaneCenter(1), 100, 30, 50);
+const road = new Road(canvas.width/2, canvas.width*0.9 ); // *0.9 to add some margin
+const car = new Car(road.getLaneCenter(3), 100, 30, 50);
 // car.draw(ctx);
 
 animate();
 
 function animate(){
-    // Update the car
-    car.update();
+    // Update the car \\ without passing road.borders() the sensor has no clue of the road borders
+    car.update(road.borders);
     // Resizing the canvas after the car's position is updated, clears the previous position data and leaves no trail
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight;;
     // Before drawing the Road: save the context
     ctx.save();
     // Before drawing the Road: Translate nothing on x, bu t

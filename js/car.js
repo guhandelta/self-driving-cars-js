@@ -16,34 +16,34 @@ class Car{
         this.controls = new Controls();
     }
 
-    update(){
+    update(roadBorders){
         this.#motion();
-        this.sensor.update();
+        this.sensor.update(roadBorders);
     }
 
     #motion(){
         if(this.controls.forward){
             this.speed += this.acceleration;
         }
-        if(this.controls.backward){
+        if(this.controls.reverse){
             this.speed -= this.acceleration;
         }
 
         // Setting the max speed of the car
-        if(this.speed>this.maxSpeed){
-            this.speed=this.maxSpeed;
+        if(this.speed > this.maxSpeed){
+            this.speed = this.maxSpeed;
         }
         // There is no -ve speed, it just means the car is moving backwards
-        if(this.speed<-this.maxSpeed/2){
-            this.speed=-this.maxSpeed/2;
+        if(this.speed <- this.maxSpeed/2){
+            this.speed =- this.maxSpeed/2;
         }
 
         // Adding friction to the car corresponding to the direction it it moving
-        if(this.speed<0){
-            this.speed+=this.friction;
+        if(this.speed > 0){
+            this.speed -= this.friction;
         }
-        if(this.speed>0){
-            this.speed-=this.friction;
+        if(this.speed < 0){
+            this.speed += this.friction;
         }
 
         // If speed !=0, then the friction will bounce the car around and keep it moving, after the key release and car stops slowly with fricion,with travelling a few pixels ahead of where the key was released
