@@ -26,6 +26,31 @@ class NeuralNetwork{
         }
         return outputs;
     }
+
+    // Mutating a network
+    /*If amount is 0, the biases and weights stay the same | if amount = 1, the value will be Math.random()*2-1. if the value is somewhere inbetween, the value will move away from the bias dependig on the amount */
+    static mutate(network, amount=1){ // amount = 1 => 100%, which randomizes everything
+        network.level.forEach(level =>{
+            for(let i=0;i<level.biases;i++){
+                level.biases[i] = lerp(
+                    // Interpolate between current value of bias to some random value between -1 to 1, depending on the amount
+                    level.biases[i],
+                    Math.random()*2-1,
+                    amount
+                );
+            }
+            for(let i=0;i<level.weights.length;i++){
+                for(let j=0;j<level.weights[i].length;j++){
+                    level.weights[i][j] = lerp(
+                        // Interpolate between current value of bias to some random value between -1 to 1, depending on the amount
+                        level.weights[i][j],
+                        Math.random()*2-1,
+                        amount
+                    );
+                }
+            }
+        });
+    }
 }
 
 // 1 level

@@ -14,19 +14,27 @@ const road = new Road(carCanvas.width/2, carCanvas.width*0.9 ); // *0.9 to add s
 
 const N = 100;
 const cars = generateCars(N);
-let bextCar = [0];
+let bestCar = [0];
 if(localStorage.getItem("bestBrain")){
-    bestCar.brain=JSON.parse(
-        localStorage.getItem("bestBrain")
-    );
+    for(let i=0;i<cars.length;i++){
+        cars[i].brain=JSON.parse(
+            localStorage.getItem("bestBrain")
+        );
+        if(1!=0){ // i=0 holds the brain of the best car
+            NeuralNetwork.mutate(cars[i].brain,0.1);
+        }
+    }
 }
 
 // An array of cars
 const traffic = [
     // A new car in the same lane as th current one is, but at some distance ahead, and be the 1st obstacle to avoid
-    new Car(road.getLaneCenter(1), -300, 30, 50, "AI"),
-    new Car(road.getLaneCenter(0), -150, 30, 50, "AI"),
-    new Car(road.getLaneCenter(2), 100, 30, 50, "AI"),
+    new Car(road.getLaneCenter(1), -800, 30, 50, "AI"),
+    new Car(road.getLaneCenter(1), -350, 30, 50, "AI"),
+    new Car(road.getLaneCenter(0), 150, 30, 50, "AI"),
+    new Car(road.getLaneCenter(2), -100, 30, 50, "AI"),
+    new Car(road.getLaneCenter(3), -50, 30, 50, "AI"),
+    new Car(road.getLaneCenter(4), -100, 30, 50, "AI"),
 ];
 
 animate();
@@ -87,7 +95,7 @@ function animate(time){
         cars[i].draw(carCtx, "FireBrick");
     }
     carCtx.globalAlpha = 1;
-    bestCar.draw(carCtx, "Maroon", true); // true enable teh sensors
+    bestCar.draw(carCtx, "Maroon", true); // true enable the sensors
 
     carCtx.restore();
 
