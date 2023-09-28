@@ -1,4 +1,4 @@
-class NeuralNetworks{
+class NeuralNetwork{
     // neuronCounts => Number of Neurons in each level
     constructor(neuronCounts){
         // Consi]truct the Nueral Network out of an array of layers/levels [ref: levels.png]
@@ -21,7 +21,7 @@ class NeuralNetworks{
         for(let i=1;i<network.levels.length;i++){ // i=1, as the 1st level was created/visited in [ln:16] 
             outputs = Level.feedForward(
                 // Provinding the output of the previous level into the new level as the input, adn final output would say if the car should go forward or backward or left or right
-                outputs, network,levels[i]
+                outputs, network.levels[i]
             );
         }
         return outputs;
@@ -43,10 +43,11 @@ class Level{
         Till this step, everything is just a shell, and for the network(brain) to function, these weights and biases should have real values
         */
         this.weights = [];
-        for(let i=0;i<this.weights.length;i++){
+        for(let i=0;i<inputCount;i++){
             // Prepare an empty output array of the size of the outputCount
             this.weights[i] = new Array(outputCount);
         }
+
 
         // random brain
         Level.#randomize(this);
@@ -87,7 +88,7 @@ class Level{
             let sum=0;
             for(let j=0;j<level.inputs.length;j++){
                 // Sum of product of input value and weights of all the path to the current output value fro the current input value
-                sum =+ level.inputs[j]*levels.weights[j][i];
+                sum =+ level.inputs[j]*level.weights[j][i];
             }
 
             // set the output neuron to 1, if the sum is greater than the bias of the output neuron
@@ -100,6 +101,6 @@ class Level{
             Adding more sensors would add additional dimensions, which would be harder to visualize. [ref: dimension1.png, dimensions2.png]
             */
         }
-        return outputs;
+        return level.outputs;
     }
 }

@@ -12,10 +12,17 @@ class Car{
         this.friction=0.05;
         this.angle=0;
         this.damaged=false;
+        // if controlType=="AI", the brain that the car already has, will be used
+        this.useBrain = controlType=="AI";
 
         // Draw the sensors only for the car driven by the user
         if(controlType != "BOT"){
             this.sensor = new Sensor(this); // this => passing tha Car to Sensor
+            this.brain = new NeuralNetwork(
+                // Specify the Array of Neuron counts or Size of the layer
+                // 1 hidden layer with 6 neurons, and another layer with 4 neurons -> 4 directions
+                [this.sensor.rayCount, 6, 4]
+            );
         }
         this.controls = new Controls(controlType);
     }
@@ -32,6 +39,19 @@ class Car{
         if(this.sensor){
             // While the sensor will still work even when the car is damaged
             this.sensor.update(roadBorders, traffic);
+            // Take out the offsets from the sensor readings, after updating the sensors
+            const offsets = this.sensor.readings.map(
+                // This is done to make sure the neurons get a higher value close 1 when the object is closer or a smaller value closer to 0 when the object is far away
+                s => s === null ? 0 /*There is no reading here*/ : 1-s.offset
+            )
+            const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+
+            if(this.useBrain){
+                this.controls.forward = outputs[0];
+                this.controls.left = outputs[1];
+                this.controls.right = outputs[2];
+                this.controls.backward = outputs[3];
+            }
         }
     }
 
