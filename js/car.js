@@ -163,7 +163,7 @@ class Car{
         return points;
     }
 
-    draw(ctx, color){
+    draw(ctx, color, drawSensors=false){
 
 
         // *********** Since the corners of the car are not known when drawing the car in this method,........
@@ -206,7 +206,7 @@ class Car{
         }
         ctx.fill();
         // Avoid drawing the sensors for the bot cars
-        if(this.sensor){
+        if(this.sensor && drawSensors){
             // Making the sensor draw itself => The car has it's own responsibility to draw the sensor    
             this.sensor.draw(ctx);
         }
